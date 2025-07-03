@@ -1,62 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="ldveh" default="compile" basedir=".">
   
+    <description>Builds, tests, and runs the project.</description>
+
     <property name="src.dir" value="src" />
-    <property name="build.dir" value="build" />
+    <property name="build.dir" value="classes" />
     <property name="lib.dir" value="lib" />
     <property name="doc.dir" value="doc" />
     <property name="dist.dir" value="dist" />
+    <property name="application" value="${dist.dir}/ldveh.jar" />
 
-    <target name="compile" depends="clean-build">
+    <target name="compile" depends="clean">
         <javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" includeantruntime="false">
             <classpath>
                 <pathelement location="${lib.dir}/jackson-annotations-2.16.0.jar" />
                 <pathelement location="${lib.dir}/jackson-databind-2.16.0.jar" /> 
-                <pathelement location="${lib.dir}/junit-4.9.jar" /> 
                 <pathelement location="${lib.dir}/jackson-core-2.16.0.jar" /> 
                 <pathelement location="${lib.dir}/jgraphx-4.2.2.jar" />
             </classpath>
         </javac>
-        <copy todir="${build.dir}">
-            <fileset dir="${src.dir}" includes="**/*.json" />
-        </copy>
-        <copy todir="${build.dir}">
-    	    <fileset dir="${src.dir}" includes="**/*.properties" />
-        </copy>
     </target>
 
-    <target name="clean-build">
-        <delete dir="${build.dir}/ldveh" />
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <mkdir dir="${build.dir}" />
+        <delete dir="${dist.dir}/lib" />
+        <delete dir="${dist.dir}/resources" />
+        <delete file="${application}" />
+    </target>
+
+    <target name="dist" depends="compile">
+        <jar destfile="${application}">
+            <fileset dir="${src.dir}/" includes="main/**/*.png" />
+            <fileset dir="${build.dir}" includes="**"/>
+            <manifest>
+                <attribute name="Manifest-Version" value="1.0"/>
+                <attribute name="Created-By" value="Florian Pépin"/>
+                <attribute name="Main-Class" value="main.Main"/>
+                <attribute name="Class-Path" value="${lib.dir}/jackson-annotations-2.16.0.jar ${lib.dir}/jackson-databind-2.16.0.jar ${lib.dir}/jackson-core-2.16.0.jar ${lib.dir}/jgraphx-4.2.2.jar"/>
+            </manifest>
+        </jar>
+        <copy todir="${dist.dir}/resources">
+            <fileset dir="${src.dir}/main/resources"/>
+        </copy>
+        <copy todir="${dist.dir}/lib">
+            <fileset dir="${lib.dir}"/>
+        </copy>
     </target>
     
-    <target name="create-javadoc" depends="clean-javadoc">
-        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}">
+    <target name="javadoc">
+        <delete>
+            <fileset dir="${doc.dir}" includes="**"/>
+        </delete>
+        <javadoc destdir="${doc.dir}">
+            <packageset dir="${src.dir}" defaultexcludes="yes"/>
             <classpath>
                 <pathelement location="${lib.dir}/jackson-annotations-2.16.0.jar" />
                 <pathelement location="${lib.dir}/jackson-databind-2.16.0.jar" /> 
-                <pathelement location="${lib.dir}/junit-4.9.jar" /> 
                 <pathelement location="${lib.dir}/jackson-core-2.16.0.jar" /> 
                 <pathelement location="${lib.dir}/jgraphx-4.2.2.jar" />
             </classpath>
         </javadoc>
     </target>
     
-    <target name="clean-javadoc">
-        <delete includeEmptyDirs="true">
-            <fileset dir="${doc.dir}" includes="**/*" />
-        </delete>
-    </target>
-    
-    <target name="create-jar" depends="clean-jar">
-  	<jar destfile="${dist.dir}/ldveh.jar" manifest="${dist.dir}/MANIFEST.MF">
-    	    <fileset dir="${build.dir}" includes="**/*.class" />
-    	    <fileset dir="${build.dir}" includes="**/*.json" />
-    	    <fileset dir="${build.dir}" includes="**/*.properties" />
-  	</jar>
-    </target>
-    
-    <target name="clean-jar">
-        <delete file="${dist.dir}/ldveh.jar" />
+    <target name="run" depends="dist">
+        <java jar="${application}" fork="true" dir="${dist.dir}"/>
     </target>
 
 </project>

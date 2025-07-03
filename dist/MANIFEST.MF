@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Created-By: Florian Pépin, Tom David et Emilien Huron
-Main-Class: ldveh.Main
-Class-path: ../lib/jackson-databind-2.16.0.jar ../lib/jackson-annotations-2.16.0.jar ../lib/junit-4.9.jar ../lib/jackson-core-2.16.0.jar ../lib/jgraphx-4.2.2.jar
-
