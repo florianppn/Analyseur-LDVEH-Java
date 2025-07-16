@@ -1,8 +1,7 @@
 package main;
 
-import main.menu.SelectMenu;
-import main.json.JsonReader;
-import main.point.PointManager;
+import main.view.*;
+import main.model.*;
 
 /**
  * Représente le point d'entrée de l'application.
@@ -19,6 +18,7 @@ public class Main {
     public static void main(String[] args) {
         JsonReader jsonReader = new JsonReader("livre");
         PointManager pointManager = new PointManager(jsonReader);
-        new SelectMenu(jsonReader, pointManager);
+        ForceDirectGraph graph = new ForceDirectGraph(pointManager);
+        graph.setVisible(true);
     }
 }

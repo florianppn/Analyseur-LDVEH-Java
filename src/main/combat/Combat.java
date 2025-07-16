@@ -3,6 +3,7 @@ package main.combat;
 import java.util.*;
 
 import main.hero.Hero;
+import main.utils.*;
 
 /**
  * Représentation d'un combat dans un LDVEH.
@@ -43,13 +44,11 @@ public class Combat {
      * @param enemies liste des ennemies.
      */
     public Combat(Integer win, Integer combatSkill, Boolean special, Evasion evasion, List<Enemie> enemies){
-        
         this.win = win;
         this.combatSkill = combatSkill;
         this.special = special;
         this.evasion = evasion;
         this.enemies = enemies;
-
     }
 
     /**
@@ -121,9 +120,9 @@ public class Combat {
      * @param hero qui provoque une fuite.
      * @return un tuple contenant l'index de la section de fuite et une instance du hero.
      */
-    public Tuple useEscapeHero(Hero hero) {
+    public Pair<Integer, Hero> useEscapeHero(Hero hero) {
         if (this.evasion.getNRounds() == 0) {
-            return new Tuple(this.evasion.getChoice(), hero);
+            return new Pair<Integer, Hero>(this.evasion.getChoice(), hero);
         } else if (this.evasion.getNRounds() == -1) {
             return this.useFightHero(hero, true);
         } else {
@@ -177,7 +176,7 @@ public class Combat {
      * @param road est la route a suivre. True si le hero veut se battre jusqu'a la mort, False si il souhaite fuir dès que possible.
      * @return une tuple contenant l'index de la section (ou -1 si le hero est mort) et une instance hero.
      */
-    public Tuple useFightHero(Hero hero, boolean road) {
+    public Pair<Integer, Hero> useFightHero(Hero hero, boolean road) {
         Hero newHero = new Hero(hero);
         int attacker = 0;
         while(newHero.getEndurance() > 0 && !this.enemies.isEmpty()) {
@@ -199,11 +198,11 @@ public class Combat {
             }
         }
         if (!road) {
-            return new Tuple(this.evasion.getChoice(), newHero);
+            return new Pair<Integer, Hero>(this.evasion.getChoice(), newHero);
         } else if(newHero.getEndurance() > 0) {
-            return new Tuple(this.win, newHero);
+            return new Pair<Integer, Hero>(this.win, newHero);
         } else {
-            return new Tuple(-1, newHero);
+            return new Pair<Integer, Hero>(-1, newHero);
         }
     }
 
@@ -228,8 +227,8 @@ public class Combat {
      * @param hero est le hero qui provoque un combat et/ou une fuite.
      * @return une liste de tuples contenant tous les choix et une instance du hero contenant ses informations à ce moment là.
      */
-    public List<Tuple> useAllChoice(Hero hero) {
-        List<Tuple> list = new ArrayList<>();
+    public List<Pair<Integer, Hero>> useAllChoice(Hero hero) {
+        List<Pair<Integer, Hero>> list = new ArrayList<>();
         list.add(useEscapeHero(hero));
         list.add(useFightHero(hero, true));
         return list;

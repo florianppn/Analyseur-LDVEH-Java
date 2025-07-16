@@ -6,4 +6,4 @@
  * @since 08-04-2024
  */
 
-package main.parcours;
+package main.model.parcours;

@@ -1,7 +1,7 @@
-package main.graph;
+package main.view;
 
-import main.point.Point;
-import main.point.PointManager;
+import main.model.Point;
+import main.model.PointManager;
 
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
@@ -16,7 +16,7 @@ import java.io.*;
 
 /**
  * Représentation d'un graphe utilisant un algorithme de force.
- * 
+ *
  * @author Tom David et Florian Pépin
  * @version 1.0
  */
@@ -115,7 +115,7 @@ public class ForceDirectGraph extends JFrame {
                     text = text.replace("\"", " ");
                     text = text.replaceAll("http.*?\\[Illustration\\]", "");
                     String child = String.valueOf(pointManager.getPoint(Integer.parseInt(cellId)).getChildsID().size());
-                    String parent = String.valueOf(pointManager.countParent(Integer.parseInt(cellId)));
+                    String parent = String.valueOf(pointManager.getParent(Integer.parseInt(cellId)));
                     String size = String.valueOf(graph.getCellGeometry(cell).getHeight());
 
                     text = "[Id] : "+cellId+"     "+"[Size] : "+size+"\n"+
@@ -147,10 +147,10 @@ public class ForceDirectGraph extends JFrame {
         Random random = new Random();
         graph.getModel().beginUpdate();
         try {
-            for (Point parent : pointManager.getPointList()) {
+            for (Point parent : pointManager.getPoints()) {
                 double x = random.nextInt(expansionX) + startPointX;
                 double y = random.nextInt(expansionY) + startPointY;
-                int countParent = pointManager.countParent(parent.getID());
+                int countParent = pointManager.getParent(parent.getID());
                 float widthNode = countParent * 10 + 10;
 
                 Object parentVertex = graph.insertVertex(graph.getDefaultParent(), String.valueOf(parent.getID()), parent.getID(), x, y, widthNode, widthNode, "shape=ellipse");
@@ -188,7 +188,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Appliquer la force de Coulomb entre deux noeuds.
-     * 
+     *
      * @param node1
      * @param node2
      */
@@ -219,7 +219,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Appliquer la force de Hooke entre deux noeuds.
-     * 
+     *
      * @param node1
      * @param node2
      */
@@ -243,7 +243,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Appliquer la force de répulsion pour tous les noeuds dans un rayon donné.
-     * 
+     *
      * @param targetNode le noeud cible à expulser.
      */
     public void forceExpulsionWithinRadius(Object targetNode) {
@@ -270,7 +270,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Appliquer toute les forces sur tout es noeuds dans un ordre donné.
-     * 
+     *
      * @param repeat
      */
     public void stackPoint(Integer repeat) {
@@ -308,9 +308,9 @@ public class ForceDirectGraph extends JFrame {
             edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#34495E");
             edgeStyle.put(mxConstants.STYLE_OPACITY, 30);
 
-            for (Point parent : pointManager.getPointList()) {
+            for (Point parent : pointManager.getPoints()) {
                 Object parentVertex = getVertex(parent.getID());
-                for (Point child : parent.getChildsPoint()) {
+                for (Point child : parent.getChilds()) {
                     Object childVertex = getVertex(child.getID());
                     graph.insertEdge(graph.getDefaultParent(), null, "", parentVertex, childVertex);
 
@@ -324,7 +324,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Récupérer un noeud par son identifiant.
-     * 
+     *
      * @param point
      * @return un noeud.
      */
@@ -341,7 +341,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Trier les noeuds par leur nombre de parents.
-     * 
+     *
      * @param map ???
      * @param asc ???
      * @return ???
@@ -366,7 +366,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Récupérer les noeuds parents d'un noeud donné.
-     * 
+     *
      * @param vertex ???
      * @return ??
      */
@@ -399,7 +399,7 @@ public class ForceDirectGraph extends JFrame {
 
     /**
      * Récupérer la couleur d'un noeud en fonction de son nombre de parents.
-     * 
+     *
      * @param count le nombre de parents du noeud.
      * @return ???
      */

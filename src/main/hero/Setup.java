@@ -3,7 +3,7 @@ package main.hero;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
 
-import main.json.JsonReader;
+import main.model.*;
 
 /**
  * Représentation du traitement des informations du hero d'un LDVEH au format JSON.
