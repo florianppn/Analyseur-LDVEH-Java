@@ -1,24 +1,21 @@
 package main.model;
 
-import main.model.Point;
-import main.model.JsonReader;
-
 import java.util.*;
 
 /**
- * Représentation des points d'un livre LDVEH.
+ * Représentation les points d'un livre LDVEH.
  * Contient la liste des points et de leurs enfants.
  * 
  * @author Florian Pépin
  * @version 2.0
  */
-public class PointManager{
+public class PointManager {
 
     private JsonReader livre; // Le livre LDVEH
     private List<Point> points; // Liste des points du livre
     private Map<Integer,Integer> parents; // Map pour stocker le nombre de fois où chaque point est parent
 
-    public PointManager(JsonReader livre){
+    public PointManager(JsonReader livre) {
         this.livre = livre;
         this.points = new ArrayList<>();
         this.parents = new HashMap<>();
@@ -28,11 +25,11 @@ public class PointManager{
         this.initParents();
     }
 
-    public Map<Integer,Integer> getParents(){
+    public Map<Integer,Integer> getParents() {
         return this.parents;
     }
 
-    public int getParent(int id){
+    public int getParent(int id) {
         return this.parents.get(id);
     }
 

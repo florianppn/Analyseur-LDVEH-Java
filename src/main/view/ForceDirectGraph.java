@@ -67,7 +67,9 @@ public class ForceDirectGraph extends JFrame {
         this.createTotalGraph();
         this.graph.getModel().endUpdate();
         this.graphComponent = new mxGraphComponent(this.graph);
+        this.graphComponent.setConnectable(false);
         this.add(this.graphComponent, BorderLayout.CENTER);
+        this.graphComponent.zoomAndCenter();
 
         // Créer le JPanel pour afficher le texte
         JPanel textPanel = new JPanel();
