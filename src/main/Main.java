@@ -18,7 +18,6 @@ public class Main {
     public static void main(String[] args) {
         JsonReader jsonReader = new JsonReader("livre");
         PointManager pointManager = new PointManager(jsonReader);
-        ForceDirectGraph graph = new ForceDirectGraph(pointManager);
-        graph.setVisible(true);
+        GUI.runGUI(pointManager);
     }
 }

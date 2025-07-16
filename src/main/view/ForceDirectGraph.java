@@ -16,14 +16,14 @@ import java.io.*;
 
 /**
  * Représentation d'un graphe utilisant un algorithme de force.
+ * C'est une vue contrôleur qui gère l'affichage et l'interaction avec les points du graphe.
  *
- * @author Tom David et Florian Pépin
- * @version 1.0
+ * @author Tom David
+ * @version 2.0
  */
-public class ForceDirectGraph extends JFrame {
+public class ForceDirectGraph extends JPanel {
 
     private mxGraph graph;
-    private JTextArea textArea;
     private PointManager pointManager;
     private int startPointX;
     private int startPointY;
@@ -35,7 +35,7 @@ public class ForceDirectGraph extends JFrame {
     private mxGraphComponent graphComponent;
 
     public ForceDirectGraph(PointManager pointManager) {
-
+        this.pointManager = pointManager;
         try {
             Properties prop = new Properties();
             prop.load(new FileInputStream("./resources/config.properties"));
@@ -54,15 +54,8 @@ public class ForceDirectGraph extends JFrame {
             this.hookForce = 0.9;
         }
 
-        this.pointManager = pointManager;
-        setTitle("Force Directed Graph");
-        setSize(1920, 800);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
-        // Créer le graphique et l'ajouter au JPanel
         this.graph = new mxGraph();
-
         this.graph.getModel().beginUpdate();
         this.createTotalGraph();
         this.graph.getModel().endUpdate();
@@ -70,27 +63,12 @@ public class ForceDirectGraph extends JFrame {
         this.graphComponent.setConnectable(false);
         this.add(this.graphComponent, BorderLayout.CENTER);
         this.graphComponent.zoomAndCenter();
-
-        // Créer le JPanel pour afficher le texte
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BorderLayout());
-        add(textPanel, BorderLayout.EAST);
-
-        // Créer le JTextArea pour afficher le texte
-        this.textArea = new JTextArea(10,20);
-        this.textArea.setBackground(Color.decode("#ececec"));
-        this.textArea.setLineWrap(true);
-        this.textArea.setWrapStyleWord(true);
-        this.textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        textPanel.add(scrollPane, BorderLayout.CENTER);
-
         this.addListener();
 
     }
 
     /**
-     * Ajouter les écouteurs pour le zoom sur le graphique.
+     * Ajouter les écouteurs pour gérer les interactions de la souris.
      */
     public void addListener() {
         graphComponent.addMouseWheelListener(new MouseWheelListener() {
@@ -103,35 +81,16 @@ public class ForceDirectGraph extends JFrame {
                 }
             }
         });
-
         graphComponent.getGraphControl().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 Object cell = graphComponent.getCellAt(e.getX(), e.getY());
                 if (cell != null && graphComponent.getGraph().getModel().isVertex(cell)) {
-
-                    String cellId = graphComponent.getGraph().convertValueToString(cell);
-
-                    String text = pointManager.getPoint(Integer.parseInt(cellId)).getText();
-                    text = text.replace("\\n", " ");
-                    text = text.replace("\"", " ");
-                    text = text.replaceAll("http.*?\\[Illustration\\]", "");
-                    String child = String.valueOf(pointManager.getPoint(Integer.parseInt(cellId)).getChildsID().size());
-                    String parent = String.valueOf(pointManager.getParent(Integer.parseInt(cellId)));
-                    String size = String.valueOf(graph.getCellGeometry(cell).getHeight());
-
-                    text = "[Id] : "+cellId+"     "+"[Size] : "+size+"\n"+
-                            "[Child] : "+child+"     [Parent] : "+parent+"\n==========[Text]==========\n"
-                            +text;
-
-
-                    textArea.setText(text);
-
+                    Integer vertexId = (Integer) graph.getModel().getValue(cell);
+                    ForceDirectGraph.this.pointManager.setCurrentPoint(ForceDirectGraph.this.pointManager.getPoint(vertexId));
                 }
-
             }
         });
-
     }
 
     /**
@@ -173,7 +132,7 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Dupliquer et supprimer les noeuds pour les afficher au premier plan (pas utile si l'opacity est en dessous de 50%).
+     * Dupliquer et supprimer les nœuds pour les afficher au premier plan.
      */
     public void duplicateAndRemoveVertices() {
         // Affiche les noeud du plus petit au plus grand
@@ -189,10 +148,10 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Appliquer la force de Coulomb entre deux noeuds.
+     * Appliquer la force de Coulomb entre deux nœuds.
      *
-     * @param node1
-     * @param node2
+     * @param node1 le premier nœud.
+     * @param node2 le deuxième nœud.
      */
     public void forceExpulsionPoint(Object node1, Object node2) {
         mxGeometry geometry1 = graph.getCellGeometry(node1);
@@ -220,10 +179,10 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Appliquer la force de Hooke entre deux noeuds.
+     * Appliquer la force de Hooke entre deux nœuds.
      *
-     * @param node1
-     * @param node2
+     * @param node1 le premier nœud.
+     * @param node2 le deuxième nœud.
      */
     public void forceAttractionPoint(Object node1, Object node2) {
         double dx = graph.getCellGeometry(node1).getX() - graph.getCellGeometry(node2).getX();
@@ -244,9 +203,9 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Appliquer la force de répulsion pour tous les noeuds dans un rayon donné.
+     * Appliquer la force de répulsion pour tous les nœuds dans un rayon donné.
      *
-     * @param targetNode le noeud cible à expulser.
+     * @param targetNode le nœud cible à expulser.
      */
     public void forceExpulsionWithinRadius(Object targetNode) {
         for (Object node : graph.getChildVertices(graph.getDefaultParent())) {
@@ -271,9 +230,9 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Appliquer toute les forces sur tout es noeuds dans un ordre donné.
+     * Appliquer toutes les forces sur tous les nœuds dans un ordre donné.
      *
-     * @param repeat
+     * @param repeat le nombre de fois que les forces seront appliquées.
      */
     public void stackPoint(Integer repeat) {
         graph.getModel().beginUpdate();
@@ -301,7 +260,7 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Créer les arêtes entre les noeuds.
+     * Créer les arêtes entre les nœuds.
      */
     public void createEdges() {
         graph.getModel().beginUpdate();
@@ -325,9 +284,9 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Récupérer un noeud par son identifiant.
+     * Récupérer un nœud par son identifiant.
      *
-     * @param point
+     * @param point l'identifiant du point.
      * @return un noeud.
      */
     private Object getVertex(Integer point) {
@@ -342,35 +301,32 @@ public class ForceDirectGraph extends JFrame {
     }
 
     /**
-     * Trier les noeuds par leur nombre de parents.
+     * Trier les nœuds par leur nombre de parents.
      *
-     * @param map ???
-     * @param asc ???
-     * @return ???
+     * @param map la map à trier.
+     * @param asc si true, trie par ordre croissant, sinon par ordre décroissant.
+     * @return une map triée par valeur.
      */
-    public static Map<Integer, Integer> sortByValue(Map<Integer, Integer> map,boolean asc) {
+    public static Map<Integer, Integer> sortByValue(Map<Integer, Integer> map, boolean asc) {
         List<Map.Entry<Integer, Integer>> list = new ArrayList<>(map.entrySet());
-
         if(asc)
             Collections.sort(list, (val1, val2) -> val1.getValue().compareTo(val2.getValue()));
         else
             Collections.sort(list, (val1, val2) -> val2.getValue().compareTo(val1.getValue()));
-
 
         Map<Integer, Integer> sortedMap = new LinkedHashMap<>();
         for (Map.Entry<Integer, Integer> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());
 
         }
-
         return sortedMap;
     }
 
     /**
-     * Récupérer les noeuds parents d'un noeud donné.
+     * Récupérer les nœuds parents d'un nœud donné.
      *
-     * @param vertex ???
-     * @return ??
+     * @param vertex le nœud dont on veut les parents.
+     * @return une liste de nœuds parents.
      */
     public List<Object> getVerticesParent(Object vertex) {
         List<Object> verticesPointingToTarget = new ArrayList<>();
@@ -403,7 +359,7 @@ public class ForceDirectGraph extends JFrame {
      * Récupérer la couleur d'un noeud en fonction de son nombre de parents.
      *
      * @param count le nombre de parents du noeud.
-     * @return ???
+     * @return la couleur au format hexadécimal.
      */
     private String getColorParent(int count) {
         int red = (int) (255 * count / 10);
@@ -411,7 +367,5 @@ public class ForceDirectGraph extends JFrame {
         String color = String.format("#%02X%02X%02X", red, green, 0);
         return color;
     }
-
-
 
 }

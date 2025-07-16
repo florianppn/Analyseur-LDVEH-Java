@@ -1,4 +1,4 @@
-package gridarena.utils;
+package main.utils;
 
 import java.util.*;
 

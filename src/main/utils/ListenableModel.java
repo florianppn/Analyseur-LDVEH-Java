@@ -1,4 +1,4 @@
-package gridarena.utils;
+package main.utils;
 
 /**
  * Représente un modèle écoutable.

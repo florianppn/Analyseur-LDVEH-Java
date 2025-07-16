@@ -12,7 +12,7 @@ import main.utils.Pair;
 /**
  * Représentation d'un point (une section) du LDVEH.
  * 
- * @author Tom David et Florian Pépin
+ * @author Florian Pépin
  * @version 2.0
  */
 public class Point {

@@ -2,27 +2,36 @@ package main.model;
 
 import java.util.*;
 
+import main.utils.*;
+
 /**
- * Représentation les points d'un livre LDVEH.
- * Contient la liste des points et de leurs enfants.
+ * Représentation des points du livre LDVEH.
+ * Cette classe gère la liste des points, leurs enfants et parents.
  * 
  * @author Florian Pépin
  * @version 2.0
  */
-public class PointManager {
+public class PointManager extends AbstractListenableModel {
 
     private JsonReader livre; // Le livre LDVEH
     private List<Point> points; // Liste des points du livre
     private Map<Integer,Integer> parents; // Map pour stocker le nombre de fois où chaque point est parent
+    private Point currentPoint; // Point courant
 
     public PointManager(JsonReader livre) {
+        super();
         this.livre = livre;
         this.points = new ArrayList<>();
         this.parents = new HashMap<>();
+        this.currentPoint = null;
 
         this.initPoints();
         this.initChildrenPoints();
         this.initParents();
+    }
+
+    public Point getCurrentPoint() {
+        return this.currentPoint;
     }
 
     public Map<Integer,Integer> getParents() {
@@ -44,6 +53,11 @@ public class PointManager {
             }
         }
         return null;
+    }
+
+    public void setCurrentPoint(Point point) {
+        this.currentPoint = point;
+        this.fireChange();
     }
 
     /**
