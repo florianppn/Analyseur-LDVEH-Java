@@ -42,7 +42,10 @@ public class PointInformationView extends JPanel implements ModelListener {
         String child = String.valueOf(this.pointManager.getCurrentPoint().getChildsID().size());
         String parent = String.valueOf(pointManager.getParent(this.pointManager.getCurrentPoint().getID()));
         int cellId = this.pointManager.getCurrentPoint().getID();
-        String res = "[ID] : "+cellId+"     "+"[Enfants] : "+child+"     [Parents] : "+ parent+"\n==========[Text]==========\n"+textPoint;
+        String res = "[ID] : "+cellId+"\n"
+                +"[Enfants] : "+child+"\n"
+                +"[Parents] : "+ parent+"\n"
+                +"\n[Text] :\n"+textPoint;
         this.textArea.setText(res);
     }
 

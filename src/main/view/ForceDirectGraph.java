@@ -29,7 +29,6 @@ public class ForceDirectGraph extends JPanel {
     private int startPointY;
     private int expansionX;
     private int expansionY;
-    private double coulombForce;
     private double hookForce;
     private Map<Integer,Integer> VertexSortList = new HashMap<>() ;
     private mxGraphComponent graphComponent;
@@ -43,18 +42,16 @@ public class ForceDirectGraph extends JPanel {
             this.startPointY = Integer.parseInt(prop.getProperty("StartGraphY"));
             this.expansionX = Integer.parseInt(prop.getProperty("ExpendedGraphX"));
             this.expansionY = Integer.parseInt(prop.getProperty("ExpendedGraphY"));
-            this.coulombForce = Double.parseDouble(prop.getProperty("CoulombForce"));
             this.hookForce = Double.parseDouble(prop.getProperty("HookForce"));
         } catch (IOException ex) {
             this.startPointX = 2000;
             this.startPointY = 2000;
             this.expansionX = 200;
             this.expansionY = 200;
-            this.coulombForce = 70;
             this.hookForce = 0.9;
         }
 
-        setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout());
         this.graph = new mxGraph();
         this.graph.getModel().beginUpdate();
         this.createTotalGraph();
@@ -64,7 +61,6 @@ public class ForceDirectGraph extends JPanel {
         this.add(this.graphComponent, BorderLayout.CENTER);
         this.graphComponent.zoomAndCenter();
         this.addListener();
-
     }
 
     /**
@@ -94,15 +90,11 @@ public class ForceDirectGraph extends JPanel {
     }
 
     /**
-     * Créer le graph total.
-     * 1. Créer les noeuds.
-     * 2. Créer les arêtes.
-     * 3. Appliquer les règles d'interaction.
-     * 4. Appliquer les règles de force.
-     * 5. Appliquer les règles de déplacement.
-     * 6. Appliquer les règles de duplication.
-     * 7. Appliquer les règles de suppression.
-     * 8. Appliquer les règles de couleur.
+     * Créer le graphe total en insérant les nœuds et les arêtes.
+     * Cette méthode génère aléatoirement les positions des nœuds
+     * et les styles en fonction du nombre de parents de chaque nœud.
+     * Elle utilise un algorithme de force pour positionner les nœuds
+     * et les relier entre eux.
      */
     public void createTotalGraph() {
         Random random = new Random();
@@ -122,12 +114,12 @@ public class ForceDirectGraph extends JPanel {
                 graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, "none", new Object[] { parentVertex });
             }
             VertexSortList = sortByValue(VertexSortList,false);
-            createEdges();
-            stackPoint(10);
-            duplicateAndRemoveVertices();
-            interactRules();
+            this.createEdges();
+            this.stackPoint(10);
+            this.duplicateAndRemoveVertices();
+            this.interactRules();
         } finally {
-            graph.getModel().endUpdate();
+            this.graph.getModel().endUpdate();
         }
     }
 
@@ -135,47 +127,14 @@ public class ForceDirectGraph extends JPanel {
      * Dupliquer et supprimer les nœuds pour les afficher au premier plan.
      */
     public void duplicateAndRemoveVertices() {
-        // Affiche les noeud du plus petit au plus grand
         Object[] vertices = graph.getChildVertices(graph.getDefaultParent());
         Object[] clonedVertices = graph.cloneCells(vertices);
-
         graph.getModel().beginUpdate();
         for (Object vertex : clonedVertices) {
             graph.addCell(vertex);
         }
         graph.getModel().remove(vertices);
         graph.getModel().endUpdate();
-    }
-
-    /**
-     * Appliquer la force de Coulomb entre deux nœuds.
-     *
-     * @param node1 le premier nœud.
-     * @param node2 le deuxième nœud.
-     */
-    public void forceExpulsionPoint(Object node1, Object node2) {
-        mxGeometry geometry1 = graph.getCellGeometry(node1);
-        mxGeometry geometry2 = graph.getCellGeometry(node2);
-
-        double dx = geometry2.getX() - geometry1.getX();
-        double dy = geometry2.getY() - geometry1.getY();
-        double currentDistance = Math.sqrt(dx * dx + dy * dy);
-
-        if (currentDistance < 0.001) {
-            geometry2.setX(geometry2.getX() + 0.1);
-            geometry2.setY(geometry2.getY() + 0.1);
-        } else {
-            double k = this.coulombForce;
-            double forceMagnitude = k / (currentDistance * currentDistance);
-
-            double forceX = forceMagnitude * (dx / currentDistance);
-            double forceY = forceMagnitude * (dy / currentDistance);
-
-            geometry2.setX(geometry2.getX() + forceX);
-            geometry2.setY(geometry2.getY() + forceY);
-        }
-
-        graph.getModel().setGeometry(node2, geometry2);
     }
 
     /**
@@ -195,7 +154,6 @@ public class ForceDirectGraph extends JPanel {
         double forceX =  force * (dx / currentDistance) ;
         double forceY =  force * (dy / currentDistance) ;
 
-
         mxGeometry geometry = graph.getCellGeometry(node2);
         geometry.setX(geometry.getX() - forceX);
         geometry.setY(geometry.getY() - forceY);
@@ -204,10 +162,11 @@ public class ForceDirectGraph extends JPanel {
 
     /**
      * Appliquer la force de répulsion pour tous les nœuds dans un rayon donné.
+     * Force de répulsion à courte distance pour éviter les chevauchements.
      *
      * @param targetNode le nœud cible à expulser.
      */
-    public void forceExpulsionWithinRadius(Object targetNode) {
+    public void forceExpulsionPoint(Object targetNode) {
         for (Object node : graph.getChildVertices(graph.getDefaultParent())) {
             if (node != targetNode) {
                 mxGeometry source = graph.getCellGeometry(targetNode);
@@ -237,22 +196,17 @@ public class ForceDirectGraph extends JPanel {
     public void stackPoint(Integer repeat) {
         graph.getModel().beginUpdate();
         try {
-            for(int i = 0;i<repeat;i++){
+            for(int i = 0; i < repeat; i++){
                 for (Map.Entry<Integer, Integer> entry : VertexSortList.entrySet()) {
                     Object sourceVertex = getVertex(entry.getKey());
-
-                    for(Object vertexParent : getVerticesParent(getVertex(entry.getKey()))){
+                    for(Object vertexParent : getVerticesParent(sourceVertex)){
                         forceAttractionPoint(sourceVertex, vertexParent);
                     }
-
                 }
-
                 for (Map.Entry<Integer, Integer> entry : VertexSortList.entrySet()) {
                     Object sourceVertex = getVertex(entry.getKey());
-                    forceExpulsionWithinRadius(sourceVertex);
-
+                    forceExpulsionPoint(sourceVertex);
                 }
-
             }
         } finally {
             graph.getModel().endUpdate();
@@ -276,7 +230,6 @@ public class ForceDirectGraph extends JPanel {
                     graph.insertEdge(graph.getDefaultParent(), null, "", parentVertex, childVertex);
 
                 }
-
             }
         } finally {
             graph.getModel().endUpdate();

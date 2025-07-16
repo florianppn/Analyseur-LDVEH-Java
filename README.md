@@ -6,7 +6,7 @@ Projet de deuxième année de licence informatique.
 
 ## Les fonctionnalités
 
-+ Graph de force Coulomb & Hooke
++ Graphe utilisant la force d'attraction de Hooke et une force de répulsion à courte portée.
 
 + Analyses (Parcours aléatoire, parcours plus cours chemin)
 
