@@ -1,7 +1,7 @@
 package main.utils;
 
 /**
- * Représentation d'un tuple contenant un choix et un hero.
+ * Représentation d'une pair (tuple) contenant deux éléments.
  * Normalement, il n'est pas possible de modifier un tuple une fois créé,
  * mais pour des raisons de facilité d'utilisation,
  * nous avons décidé de le faire mutable.
