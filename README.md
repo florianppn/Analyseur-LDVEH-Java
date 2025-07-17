@@ -25,3 +25,9 @@ Ce projet est sous licence [MIT](./LICENSE.md).
 ## Captures d'écran
 
 ![graph](./screenshots/graph.png)
+
+## Contributeurs
+
++ [Tom David](https://github.com/kitoutou999)
+
++ Emilien Huron
