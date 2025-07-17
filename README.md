@@ -23,3 +23,5 @@ Projet de deuxième année de licence informatique.
 Ce projet est sous licence [MIT](./LICENSE.md).
 
 ## Captures d'écran
+
+![graph](./screenshots/graph.png)

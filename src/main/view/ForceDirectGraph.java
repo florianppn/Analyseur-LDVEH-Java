@@ -61,13 +61,13 @@ public class ForceDirectGraph extends JPanel {
         this.graphComponent.zoom(0.18);
         this.graphComponent.zoomAndCenter();
         this.add(this.graphComponent, BorderLayout.CENTER);
-        this.addListener();
+        this.addListeners();
     }
 
     /**
      * Ajouter les écouteurs pour gérer les interactions de la souris.
      */
-    public void addListener() {
+    public void addListeners() {
         graphComponent.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
