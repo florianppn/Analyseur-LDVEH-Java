@@ -18,9 +18,9 @@ public class PointManager extends AbstractListenableModel {
     private Map<Integer,Integer> parents; // Map pour stocker le nombre de fois où chaque point est parent
     private Point currentPoint; // Point courant
 
-    public PointManager(JsonReader livre) {
+    public PointManager(String name) {
         super();
-        this.livre = livre;
+        this.livre = new JsonReader(name);;
         this.points = new ArrayList<>();
         this.parents = new HashMap<>();
         this.currentPoint = null;

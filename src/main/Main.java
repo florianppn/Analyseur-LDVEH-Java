@@ -16,8 +16,7 @@ public class Main {
      * @param args Les arguments de la ligne de commande (non utilisés).
      */
     public static void main(String[] args) {
-        JsonReader jsonReader = new JsonReader("livre");
-        PointManager pointManager = new PointManager(jsonReader);
+        PointManager pointManager = new PointManager("livre");
         GUI.runGUI(pointManager);
     }
 }
