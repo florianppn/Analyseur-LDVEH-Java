@@ -6,9 +6,9 @@ Projet de deuxième année de licence informatique.
 
 ## Les fonctionnalités
 
-+ Graphe utilisant la force d'attraction de Hooke et une force de répulsion à courte portée.
++ Dessin d'un graphe basé sur les forces (Force-Directed Graph)
 
-+ Analyses (Parcours aléatoire, parcours plus cours chemin)
++ Analyses d'un graphe (Parcours aléatoire, parcours plus cours chemin)
 
 + Modèle étendu (combats, items, hero et choix)
 

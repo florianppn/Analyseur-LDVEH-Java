@@ -58,8 +58,9 @@ public class ForceDirectGraph extends JPanel {
         this.graph.getModel().endUpdate();
         this.graphComponent = new mxGraphComponent(this.graph);
         this.graphComponent.setConnectable(false);
-        this.add(this.graphComponent, BorderLayout.CENTER);
+        this.graphComponent.zoom(0.18);
         this.graphComponent.zoomAndCenter();
+        this.add(this.graphComponent, BorderLayout.CENTER);
         this.addListener();
     }
 
